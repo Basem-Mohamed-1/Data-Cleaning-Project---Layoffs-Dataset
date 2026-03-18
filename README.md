@@ -1,19 +1,35 @@
 # 🧹 Data Cleaning Project - World Layoffs Dataset
 
-This project demonstrates cleaning a real-world layoffs dataset using SQL. The dataset contained duplicates, inconsistent text entries, missing values, and improperly formatted dates. The goal was to transform the raw dataset into a clean, standardized, and analysis-ready dataset suitable for analysis, reporting, or visualization.
+## 📌 Project Overview
+In this project, I performed data cleaning on a real-world layoffs dataset using SQL. The goal was to transform raw, inconsistent data into a clean and structured format suitable for analysis.
 
-The dataset contains company information, location, industry, number of employees laid off, percentage laid off, date of announcement, company stage, country, and total funds raised. The main objectives were to remove duplicates, standardize text values, handle missing data, convert dates to proper DATE format, and remove unnecessary columns. SQL and MySQL Workbench were used for all transformations, and the final dataset was exported as CSV for further use.
+---
 
-To work safely on the data, a staging table was created using `CREATE TABLE layoffs_staging LIKE layoffs;` and all raw data was copied with `INSERT INTO layoffs_staging SELECT * FROM layoffs;`. This ensured that the original dataset remained intact. Duplicate records were identified using the `ROW_NUMBER()` function over the relevant columns, and rows with `row_num > 1` were deleted to remove duplicates while keeping the first occurrence.
+## 📂 Dataset
+The dataset contains information about:
+- Company name  
+- Location  
+- Industry  
+- Total laid off employees  
+- Percentage laid off  
+- Date  
+- Stage  
+- Country  
+- Funds raised  
 
-Text data was standardized to remove extra spaces using `UPDATE layoffs_staging2 SET company = TRIM(company);`. Industry names were unified, for example using `UPDATE layoffs_staging2 SET industry = 'Crypto' WHERE industry LIKE 'Crypto%';`, and country names were cleaned to remove trailing dots via `UPDATE layoffs_staging2 SET country = TRIM(TRAILING '.' FROM country) WHERE country LIKE 'United States%';`. Dates originally stored as text were converted to proper DATE type with `UPDATE layoffs_staging2 SET date = STR_TO_DATE(date,'%m/%d/%Y');` and the column type was modified with `ALTER TABLE layoffs_staging2 MODIFY COLUMN date DATE;`.
+---
 
-Missing values were addressed by converting blank strings to NULL using `UPDATE layoffs_staging2 SET industry = NULL WHERE industry = '';`. Any remaining missing industry values were filled from matching rows via a self join: `UPDATE layoffs_staging2 t1 JOIN layoffs_staging2 t2 ON t1.company = t2.company AND t1.location = t2.location SET t1.industry = t2.industry WHERE t1.industry IS NULL AND t2.industry IS NOT NULL;`. Rows with both `total_laid_off` and `percentage_laid_off` as NULL were deleted using `DELETE FROM layoffs_staging2 WHERE total_laid_off IS NULL AND percentage_laid_off IS NULL;`. Temporary helper columns such as `row_num` were dropped with `ALTER TABLE layoffs_staging2 DROP COLUMN row_num;`.
+## 🎯 Objectives
+- Remove duplicates  
+- Standardize data  
+- Handle NULL and blank values  
+- Convert date format  
+- Remove unnecessary columns  
 
-After cleaning, the dataset was duplicate-free, text values were standardized, dates were converted to DATE format, and missing values were appropriately handled. For example, industry values like "Crypto blockchain" and "Crypto " were standardized to "Crypto", country names such as "United States." were cleaned to "United States", and blank numeric fields were either filled or removed. The final dataset is consistent, accurate, and ready for analysis.
+---
 
-The project structure is as follows: `data_cleaning.sql` contains all SQL scripts, `raw_data.csv` is the original dataset, `cleaned_data.csv` is the cleaned dataset exported for analysis, `screenshots/` can optionally contain before and after images, and `README.md` contains this documentation.
+## 🛠️ Tools Used
+- SQL  
+- MySQL  
 
-Key techniques demonstrated in this project include using SQL window functions to detect duplicates, self joins to fill missing values, conditional updates and deletes, text standardization with `TRIM` and `LIKE`, and data type conversion using `STR_TO_DATE()`. The project illustrates how structured cleaning transforms messy real-world data into a reliable dataset, and provides a foundation for further analytics or visualization.
-
-If you found this project helpful, feel free to give the repository a star ⭐.
+---
